@@ -13,27 +13,28 @@ import (
 )
 
 const (
-	DB_USER_NAME         = "DB_USER_NAME"
-	DB_PASSWORD          = "DB_PASSWORD"
-	DB_URL               = "DB_URL"
-	DB_PORT              = "DB_PORT"
-	DB_NAME              = "DB_NAME"
-	DRIVER_NAME          = "postgres"
-	MIGRATION_FILES_DEST = "file:///../migration"
+	DB_USER_NAME = "DB_USER_NAME"
+	DB_PASSWORD  = "DB_PASSWORD"
+	DB_URL       = "DB_URL"
+	DB_PORT      = "DB_PORT"
+	DB_NAME      = "DB_NAME"
+	DRIVER_NAME  = "postgres"
 )
 
 var db *sql.DB
 var url string
+var migrations string
 
 func init() {
 	url = dbUrl()
 	db = initDb()
+	migrations = migrationFilesDest()
 	migrateDb()
 }
 
 func migrateDb() {
-	m, err := migrate.New(MIGRATION_FILES_DEST, url)
-	if err != nil {
+	m, err := migrate.New(migrations, url)
+	if err == nil {
 		m.Up()
 	} else {
 		m.Down()
@@ -49,7 +50,7 @@ func initDb() *sql.DB {
 }
 
 func dbUrl() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		os.Getenv(DB_USER_NAME),
 		os.Getenv(DB_PASSWORD),
 		os.Getenv(DB_URL),
@@ -82,6 +83,12 @@ func FindSession(sessionId string) (*UssdSession, error) {
 		return nil, err
 	}
 
+	defer rows.Close()
+
+	if !rows.Next() {
+		return nil, nil
+	}
+
 	var s = UssdSession{}
 
 	for rows.Next() {
@@ -95,6 +102,13 @@ func FindSession(sessionId string) (*UssdSession, error) {
 			&s.SessionStartTime)
 	}
 	return &s, nil
+}
+
+func migrationFilesDest() string {
+	basePath, err := os.Getwd()
+	if err != nil {
+	}
+	return fmt.Sprintf("file://%s/internal/db/migration", basePath)
 }
 
 type UssdSession struct {
