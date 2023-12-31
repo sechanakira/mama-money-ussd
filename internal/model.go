@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 type UssdRequest struct {
 	sessionId string
 	msisdn    string
@@ -16,6 +18,7 @@ type UssdSession struct {
 	msisdn              string
 	nextStage           string
 	countryName         string
-	amount              string
+	amount              float32
 	foreingCurrencyCode string
+	sessionStartTime    time.Time
 }
