@@ -6,6 +6,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"log"
 	"os"
+	"time"
 )
 
 const (
@@ -51,4 +52,22 @@ func dbUrl() string {
 		os.Getenv(DB_URL),
 		os.Getenv(DB_PORT),
 		os.Getenv(DB_NAME))
+}
+
+func InitUssdSession(sessionId string, msisdn string) {
+	_, err := db.Exec("INSERT INTO ussd_session (session_id,msisdn,next_stage,session_start_time) VALUES ($1,$2,$3,$4)",
+		sessionId, msisdn, "MENU_2", time.Now())
+	if err != nil {
+	}
+}
+
+func UpdateUssdSession(sessionId string, values map[string]string) {
+	nextStage := values["nextStage"]
+	countryName := values["countryName"]
+	amount := values["amount"]
+	foreignCurrencyCode := values[""]
+	_, err := db.Exec("UPDATE ussd_session SET next_stage = $1, country_name = $2, amount = $3, foreign_currency_code =$4 WHERE session_id = $5",
+		nextStage, countryName, amount, foreignCurrencyCode, sessionId)
+	if err != nil {
+	}
 }
