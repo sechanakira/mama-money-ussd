@@ -3,14 +3,14 @@ package internal
 import "time"
 
 type UssdRequest struct {
-	sessionId string
-	msisdn    string
-	userEntry string
+	SessionId string `json:"sessionId"`
+	Msisdn    string `json:"msisdn"`
+	UserEntry string `json:"userEntry"`
 }
 
 type UssdResponse struct {
-	sessionId string
-	message   string
+	SessionId string `json:"sessionId"`
+	Message   string `json:"message"`
 }
 
 type UssdSession struct {
