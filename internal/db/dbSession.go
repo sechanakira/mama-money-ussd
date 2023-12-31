@@ -71,3 +71,15 @@ func UpdateUssdSession(sessionId string, values map[string]string) {
 	if err != nil {
 	}
 }
+
+func FindSession(sessionId string) bool {
+	r, err := db.Exec("SELECT * FROM ussd_session WHERE session_id = $1", sessionId)
+	if err != nil {
+		return false
+	}
+	a, err := r.RowsAffected()
+	if err != nil {
+		return false
+	}
+	return a != 0
+}

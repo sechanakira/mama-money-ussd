@@ -8,6 +8,7 @@ import (
 type UssdSessionDb interface {
 	init()
 	update()
+	hasSession() bool
 }
 
 func (u *UssdSession) init() {
@@ -21,4 +22,8 @@ func (u *UssdSession) update() {
 	values["amount"] = fmt.Sprintf("%f", u.amount)
 	values["foreignCurrencyCode"] = u.foreignCurrencyCode
 	db.UpdateUssdSession(u.sessionId, values)
+}
+
+func (u *UssdSession) hasSession() bool {
+	return db.FindSession(u.sessionId)
 }
