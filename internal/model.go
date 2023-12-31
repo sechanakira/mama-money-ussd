@@ -12,6 +12,9 @@ type UssdResponse struct {
 }
 
 type UssdSession struct {
-	sessionId string
-	nextSate  string
+	sessionId           string
+	nextStage           string
+	countryName         string
+	amount              string
+	foreingCurrencyCode string
 }
