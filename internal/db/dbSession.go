@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"time"
@@ -16,7 +19,7 @@ const (
 	DB_PORT              = "DB_PORT"
 	DB_NAME              = "DB_NAME"
 	DRIVER_NAME          = "postgres"
-	MIGRATION_FILES_DEST = "file:///migration"
+	MIGRATION_FILES_DEST = "file:///../migration"
 )
 
 var db *sql.DB
@@ -72,14 +75,34 @@ func UpdateUssdSession(sessionId string, values map[string]string) {
 	}
 }
 
-func FindSession(sessionId string) bool {
-	r, err := db.Exec("SELECT * FROM ussd_session WHERE session_id = $1", sessionId)
+func FindSession(sessionId string) (*UssdSession, error) {
+	rows, err := db.Query("SELECT * FROM ussd_session WHERE session_id = $1", sessionId)
+
 	if err != nil {
-		return false
+		return nil, err
 	}
-	a, err := r.RowsAffected()
-	if err != nil {
-		return false
+
+	var s = UssdSession{}
+
+	for rows.Next() {
+		rows.Scan(
+			&s.SessionId,
+			&s.Msisdn,
+			&s.NextStage,
+			&s.CountryName,
+			&s.Amount,
+			&s.ForeignCurrencyCode,
+			&s.SessionStartTime)
 	}
-	return a != 0
+	return &s, nil
+}
+
+type UssdSession struct {
+	SessionId           string
+	Msisdn              string
+	NextStage           string
+	CountryName         string
+	Amount              float32
+	ForeignCurrencyCode string
+	SessionStartTime    time.Time
 }

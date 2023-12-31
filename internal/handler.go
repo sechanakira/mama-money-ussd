@@ -16,7 +16,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if s.hasSession() {
-
+		s.refresh()
 	} else {
 		s.init()
 	}

@@ -9,6 +9,7 @@ type UssdSessionDb interface {
 	init()
 	update()
 	hasSession() bool
+	refresh()
 }
 
 func (u *UssdSession) init() {
@@ -25,5 +26,22 @@ func (u *UssdSession) update() {
 }
 
 func (u *UssdSession) hasSession() bool {
-	return db.FindSession(u.sessionId)
+	us, err := db.FindSession(u.sessionId)
+
+	if err != nil {
+		return false
+	}
+
+	return us != nil
+}
+
+func (u *UssdSession) refresh() {
+	us, _ := db.FindSession(u.sessionId)
+	u.sessionId = us.SessionId
+	u.msisdn = us.Msisdn
+	u.nextStage = us.NextStage
+	u.countryName = us.CountryName
+	u.amount = us.Amount
+	u.foreignCurrencyCode = us.ForeignCurrencyCode
+	u.sessionStartTime = us.SessionStartTime
 }
