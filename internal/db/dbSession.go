@@ -65,7 +65,7 @@ func UpdateUssdSession(sessionId string, values map[string]string) {
 	nextStage := values["nextStage"]
 	countryName := values["countryName"]
 	amount := values["amount"]
-	foreignCurrencyCode := values[""]
+	foreignCurrencyCode := values["foreignCurrencyCode"]
 	_, err := db.Exec("UPDATE ussd_session SET next_stage = $1, country_name = $2, amount = $3, foreign_currency_code =$4 WHERE session_id = $5",
 		nextStage, countryName, amount, foreignCurrencyCode, sessionId)
 	if err != nil {

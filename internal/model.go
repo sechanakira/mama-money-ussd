@@ -19,6 +19,6 @@ type UssdSession struct {
 	nextStage           string
 	countryName         string
 	amount              float32
-	foreingCurrencyCode string
+	foreignCurrencyCode string
 	sessionStartTime    time.Time
 }
