@@ -13,6 +13,7 @@ type UssdResponse struct {
 
 type UssdSession struct {
 	sessionId           string
+	msisdn              string
 	nextStage           string
 	countryName         string
 	amount              string
