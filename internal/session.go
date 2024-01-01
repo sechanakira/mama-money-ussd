@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"mama-money-ussd/internal/db"
+	"time"
 )
 
 type UssdSessionDb interface {
@@ -49,4 +50,14 @@ func (u *UssdSession) refresh() {
 
 func (u *UssdSession) clear() {
 	db.DeleteSession(u.sessionId)
+}
+
+func init() {
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+	go func() {
+		for range ticker.C {
+			db.DeleteExpiredSessions()
+		}
+	}()
 }
