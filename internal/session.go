@@ -10,6 +10,7 @@ type UssdSessionDb interface {
 	update()
 	hasSession() bool
 	refresh()
+	clear()
 }
 
 func (u *UssdSession) init() {
@@ -44,4 +45,8 @@ func (u *UssdSession) refresh() {
 	u.amount = us.Amount
 	u.foreignCurrencyCode = us.ForeignCurrencyCode
 	u.sessionStartTime = us.SessionStartTime
+}
+
+func (u *UssdSession) clear() {
+	db.DeleteSession(u.sessionId)
 }
