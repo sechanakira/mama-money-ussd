@@ -85,13 +85,11 @@ func FindSession(sessionId string) (*UssdSession, error) {
 
 	defer rows.Close()
 
-	if !rows.Next() {
-		return nil, nil
-	}
-
 	var s = UssdSession{}
+	var foundRows bool
 
 	for rows.Next() {
+		foundRows = true
 		rows.Scan(
 			&s.SessionId,
 			&s.Msisdn,
@@ -101,7 +99,16 @@ func FindSession(sessionId string) (*UssdSession, error) {
 			&s.ForeignCurrencyCode,
 			&s.SessionStartTime)
 	}
+
+	if !foundRows {
+		return nil, nil
+	}
+
 	return &s, nil
+}
+
+func DeleteSession(sessionId string) {
+	db.Exec("DELETE FROM ussd_session WHERE session_id = $1", sessionId)
 }
 
 func migrationFilesDest() string {
