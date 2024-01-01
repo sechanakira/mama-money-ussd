@@ -111,6 +111,10 @@ func DeleteSession(sessionId string) {
 	db.Exec("DELETE FROM ussd_session WHERE session_id = $1", sessionId)
 }
 
+func DeleteExpiredSessions() {
+	db.Exec("DELETE FROM ussd_session WHERE session_start_time < NOW() - INTERVAL '5 minutes'")
+}
+
 func migrationFilesDest() string {
 	basePath, err := os.Getwd()
 	if err != nil {
