@@ -19,6 +19,7 @@ would you like to send to
 will receive %s
 %s
 1) OK`
+	MESSAGE_4 = `Thank you for using Mama Money!`
 )
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +41,14 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 
 		if s.nextStage == "MENU_3" {
 			handleMenu3(w, req, s)
+		}
+
+		if s.nextStage == "MENU_4" {
+			s.clear()
+			resp := UssdResponse{s.sessionId, MESSAGE_4}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(&resp)
 		}
 	} else {
 		s.init()
@@ -77,8 +86,8 @@ func handleMenu3(w http.ResponseWriter, req UssdRequest, s UssdSession) {
 	var resp UssdResponse
 	amt, err := strconv.ParseFloat(req.UserEntry, 32)
 	if err != nil {
-		s.clear()
 		resp = UssdResponse{s.sessionId, "Invalid response"}
+		s.clear()
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(&resp)
